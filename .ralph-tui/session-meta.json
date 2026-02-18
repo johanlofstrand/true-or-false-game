@@ -1,0 +1,15 @@
+{
+  "id": "05522bcb-2690-467d-88b3-89ff5a8cfe9f",
+  "status": "interrupted",
+  "startedAt": "2026-02-18T16:06:33.320Z",
+  "updatedAt": "2026-02-18T18:16:48.707Z",
+  "agentPlugin": "claude",
+  "trackerPlugin": "json",
+  "prdPath": "prd.json",
+  "currentIteration": 0,
+  "maxIterations": 10,
+  "totalTasks": 0,
+  "tasksCompleted": 0,
+  "cwd": "/Users/johan/workspace/labs/hackfriday-ai",
+  "endedAt": "2026-02-18T18:16:48.707Z"
+}

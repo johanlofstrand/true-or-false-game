@@ -1,0 +1,134 @@
+{
+  "name": "Sant eller Falskt - Multiplayer Quiz Game",
+  "description": "Build a multiplayer \"True or False\" quiz game with Socket.io rooms, swipe gestures, real-time scoring, and an optional AI question generator.",
+  "branchName": "feature/sant-eller-falskt-multiplayer-quiz-game",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create challenge README",
+      "description": "Create challenge README",
+      "acceptanceCriteria": [],
+      "priority": 1,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "—"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Create progressive hints system",
+      "description": "Create progressive hints system",
+      "acceptanceCriteria": [],
+      "priority": 2,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "—"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Scaffold facit monorepo project",
+      "description": "Scaffold facit monorepo project",
+      "acceptanceCriteria": [],
+      "priority": 3,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "—"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Build pre-generated question bank",
+      "description": "Build pre-generated question bank",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": false,
+      "labels": [],
+      "dependsOn": [
+        "US-003"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Implement Socket.io room management on server",
+      "description": "Implement Socket.io room management on server",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-004"
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Implement server-side scoring and game loop",
+      "description": "Implement server-side scoring and game loop",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-005"
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Build client screens: Home and Lobby",
+      "description": "Build client screens: Home and Lobby",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-005"
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Build client game screen with swipe gestures",
+      "description": "Build client game screen with swipe gestures",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-006",
+        "US-007"
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "Build client results screen with leaderboard",
+      "description": "Build client results screen with leaderboard",
+      "acceptanceCriteria": [],
+      "priority": 4,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-008"
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "Add AI-generated question support (optional OpenAI integration)",
+      "description": "Add AI-generated question support (optional OpenAI integration)",
+      "acceptanceCriteria": [],
+      "priority": 1,
+      "passes": true,
+      "labels": [],
+      "dependsOn": [
+        "US-006"
+      ]
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-02-18T15:57:16.003Z",
+    "version": "1.0.0",
+    "sourcePrd": "prd.md",
+    "updatedAt": "2026-02-18T18:12:46.179Z"
+  }
+}
