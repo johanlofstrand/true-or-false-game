@@ -14,6 +14,9 @@ import { generateHints, HintTracker } from "./hints.js";
 import { RoomManager } from "./rooms.js";
 import { GameManager } from "./game-manager.js";
 import { isAIAvailable } from "./ai-questions.js";
+import { RateLimiter } from "./rate-limiter.js";
+
+const socketRateLimiter = new RateLimiter();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -59,6 +62,10 @@ io.on("connection", (socket) => {
   // ── Room events ──────────────────────────────────────
 
   socket.on("room:create", async (playerName, language) => {
+    if (!socketRateLimiter.allow(`create:${socket.id}`, 5, 10 * 60 * 1000)) {
+      socket.emit("error", "Too many rooms created. Please wait a few minutes.");
+      return;
+    }
     // Leave any existing room first
     const existing = roomManager.getRoomBySocket(socket.id);
     if (existing) {
@@ -101,6 +108,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("room:updateSettings", async (settings) => {
+    if (!socketRateLimiter.allow(`settings:${socket.id}`, 10, 60 * 1000)) {
+      socket.emit("error", "Too many settings changes. Please slow down.");
+      return;
+    }
     const room = roomManager.getRoomBySocket(socket.id);
     if (!room) {
       socket.emit("error", "You are not in a room.");

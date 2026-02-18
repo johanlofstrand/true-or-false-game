@@ -1,5 +1,9 @@
 import OpenAI from "openai";
 import type { Question, Language } from "@facit/shared";
+import { RateLimiter } from "./rate-limiter.js";
+
+const AI_HOURLY_LIMIT = Number(process.env.AI_HOURLY_LIMIT ?? 10);
+const aiRateLimiter = new RateLimiter();
 
 let openaiClient: OpenAI | null = null;
 
@@ -65,6 +69,11 @@ export async function generateAIQuestions(
   language: Language = "en",
 ): Promise<Question[]> {
   if (!isAIAvailable()) {
+    return [];
+  }
+
+  if (!aiRateLimiter.allow("ai:global", AI_HOURLY_LIMIT, 60 * 60 * 1000)) {
+    console.warn(`AI rate limit reached (max ${AI_HOURLY_LIMIT}/hour). Falling back to question bank.`);
     return [];
   }
 
