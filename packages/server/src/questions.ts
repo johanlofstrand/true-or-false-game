@@ -1,7 +1,7 @@
-import type { Question } from "@facit/shared";
+import type { Question, Language } from "@facit/shared";
 
-/** Pre-generated question bank for "Sant eller Falskt" */
-const QUESTION_BANK: Question[] = [
+/** Pre-generated question bank — English */
+const QUESTION_BANK_EN: Question[] = [
   {
     id: "q1",
     statement: "Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible.",
@@ -144,6 +144,150 @@ const QUESTION_BANK: Question[] = [
   },
 ];
 
+/** Pre-generated question bank — Swedish */
+const QUESTION_BANK_SV: Question[] = [
+  {
+    id: "q1-sv",
+    statement: "Honung blir aldrig dålig. Arkeologer har hittat 3 000 år gammal honung i egyptiska gravar som fortfarande var ätbar.",
+    isTrue: true,
+    category: "Mat & Vetenskap",
+    source: "Smithsonian Magazine",
+  },
+  {
+    id: "q2-sv",
+    statement: "Kinesiska muren syns från rymden med blotta ögat.",
+    isTrue: false,
+    category: "Geografi",
+    source: "NASA",
+  },
+  {
+    id: "q3-sv",
+    statement: "Bläckfiskar har tre hjärtan.",
+    isTrue: true,
+    category: "Djur",
+    source: "National Geographic",
+  },
+  {
+    id: "q4-sv",
+    statement: "Blixten slår aldrig ner på samma ställe två gånger.",
+    isTrue: false,
+    category: "Natur",
+    source: "NOAA",
+  },
+  {
+    id: "q5-sv",
+    statement: "Bananer är bär, men jordgubbar är det inte.",
+    isTrue: true,
+    category: "Botanik",
+    source: "Stanford University",
+  },
+  {
+    id: "q6-sv",
+    statement: "Människor använder bara 10% av sin hjärna.",
+    isTrue: false,
+    category: "Biologi",
+    source: "Scientific American",
+  },
+  {
+    id: "q7-sv",
+    statement: "Venus är den hetaste planeten i vårt solsystem, trots att den inte ligger närmast solen.",
+    isTrue: true,
+    category: "Rymden",
+    source: "NASA",
+  },
+  {
+    id: "q8-sv",
+    statement: "Guldfiskar har ett minne på bara 3 sekunder.",
+    isTrue: false,
+    category: "Djur",
+    source: "University of Plymouth",
+  },
+  {
+    id: "q9-sv",
+    statement: "En grupp flamingos kallas en 'flamboyance'.",
+    isTrue: true,
+    category: "Djur",
+    source: "Audubon Society",
+  },
+  {
+    id: "q10-sv",
+    statement: "Mount Everest är det högsta berget mätt från bas till topp.",
+    isTrue: false,
+    category: "Geografi",
+    source: "USGS (Mauna Kea är högre mätt från bas till topp)",
+  },
+  {
+    id: "q11-sv",
+    statement: "Kleopatra levde närmare i tid till månlandningen än till byggandet av den stora pyramiden.",
+    isTrue: true,
+    category: "Historia",
+    source: "History.com",
+  },
+  {
+    id: "q12-sv",
+    statement: "Diamanter görs av komprimerat kol.",
+    isTrue: false,
+    category: "Geologi",
+    source: "Geological Society of America",
+  },
+  {
+    id: "q13-sv",
+    statement: "En dag på Venus är längre än ett år på Venus.",
+    isTrue: true,
+    category: "Rymden",
+    source: "NASA",
+  },
+  {
+    id: "q14-sv",
+    statement: "Sushi betyder 'rå fisk' på japanska.",
+    isTrue: false,
+    category: "Språk",
+    source: "Det betyder 'surt ris'",
+  },
+  {
+    id: "q15-sv",
+    statement: "Hajar är äldre än träd. Hajar har funnits i cirka 400 miljoner år, medan träd dök upp för cirka 350 miljoner år sedan.",
+    isTrue: true,
+    category: "Naturhistoria",
+    source: "Smithsonian",
+  },
+  {
+    id: "q16-sv",
+    statement: "Napoleon Bonaparte var ovanligt kort för sin tid.",
+    isTrue: false,
+    category: "Historia",
+    source: "Han var ca 170 cm, genomsnittligt för den tiden",
+  },
+  {
+    id: "q17-sv",
+    statement: "Skottlands nationaldjur är enhörningen.",
+    isTrue: true,
+    category: "Kultur",
+    source: "Royal Scottish Government",
+  },
+  {
+    id: "q18-sv",
+    statement: "Tungan är den starkaste muskeln i människokroppen.",
+    isTrue: false,
+    category: "Biologi",
+    source: "Library of Congress",
+  },
+  {
+    id: "q19-sv",
+    statement: "Det finns fler möjliga schackpartier än det finns atomer i det observerbara universum.",
+    isTrue: true,
+    category: "Matematik",
+    source: "Shannons taluppskattning",
+  },
+  {
+    id: "q20-sv",
+    statement: "Tjurar blir arga av färgen röd.",
+    isTrue: false,
+    category: "Djur",
+    source: "MythBusters / Djurvetenskap",
+  },
+];
+
 /** Shuffle an array in place using Fisher-Yates */
 function shuffle<T>(array: T[]): T[] {
   const a = [...array];
@@ -155,7 +299,8 @@ function shuffle<T>(array: T[]): T[] {
 }
 
 /** Get a randomized selection of questions from the bank */
-export function getQuestions(count: number): Question[] {
-  const shuffled = shuffle(QUESTION_BANK);
+export function getQuestions(count: number, language: Language = "en"): Question[] {
+  const bank = language === "sv" ? QUESTION_BANK_SV : QUESTION_BANK_EN;
+  const shuffled = shuffle(bank);
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }

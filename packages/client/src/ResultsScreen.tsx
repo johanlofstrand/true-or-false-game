@@ -1,4 +1,5 @@
-import type { LeaderboardEntry } from "@facit/shared";
+import type { LeaderboardEntry, Language } from "@facit/shared";
+import { t } from "./i18n";
 
 interface ResultsScreenProps {
   leaderboard: LeaderboardEntry[];
@@ -6,6 +7,7 @@ interface ResultsScreenProps {
   isHost: boolean;
   onPlayAgain: () => void;
   onLeave: () => void;
+  language: Language;
 }
 
 function formatTime(ms: number): string {
@@ -21,6 +23,7 @@ export function ResultsScreen({
   isHost,
   onPlayAgain,
   onLeave,
+  language,
 }: ResultsScreenProps) {
   const winner = leaderboard[0];
   const currentPlayer = leaderboard.find((e) => e.player.id === playerId);
@@ -31,12 +34,12 @@ export function ResultsScreen({
       <div className="results-card">
         {/* Header */}
         <div className="results-header">
-          <h1 className="results-header__title">Resultat</h1>
+          <h1 className="results-header__title">{t(language, "results.title")}</h1>
           {currentPlayer && (
             <p className="results-header__subtitle">
               {isWinner
-                ? "Grattis, du vann!"
-                : `Du kom på plats ${currentPlayer.rank}`}
+                ? t(language, "results.youWon")
+                : t(language, "results.yourRank", { rank: currentPlayer.rank })}
             </p>
           )}
         </div>
@@ -44,16 +47,16 @@ export function ResultsScreen({
         {/* Leaderboard */}
         <section
           className="results-leaderboard"
-          aria-label="Resultattavla"
+          aria-label={t(language, "results.leaderboard")}
         >
-          <h2 className="sr-only">Resultattavla</h2>
+          <h2 className="sr-only">{t(language, "results.leaderboard")}</h2>
 
           {/* Podium for top 3 */}
           {leaderboard.length >= 2 && (
             <div
               className="results-podium"
               role="list"
-              aria-label="Topp 3"
+              aria-label={t(language, "results.top3")}
             >
               {leaderboard.slice(0, 3).map((entry) => (
                 <div
@@ -61,15 +64,15 @@ export function ResultsScreen({
                   className={`results-podium__place results-podium__place--${entry.rank}${entry.player.id === playerId ? " results-podium__place--you" : ""}`}
                   role="listitem"
                 >
-                  <span className="results-podium__rank" aria-label={`Plats ${entry.rank}`}>
+                  <span className="results-podium__rank" aria-label={t(language, "results.rank", { rank: entry.rank })}>
                     {RANK_LABELS[entry.rank] ?? entry.rank}
                   </span>
                   <span className="results-podium__name">
                     {entry.player.name}
-                    {entry.player.id === playerId && " (du)"}
+                    {entry.player.id === playerId && ` (${t(language, "lobby.you")})`}
                   </span>
                   <span className="results-podium__score">
-                    {entry.player.score} p
+                    {entry.player.score} {t(language, "game.points")}
                   </span>
                 </div>
               ))}
@@ -78,14 +81,14 @@ export function ResultsScreen({
 
           {/* Full results table */}
           <div className="results-table-wrapper">
-            <table className="results-table" aria-label="Fullständiga resultat">
+            <table className="results-table" aria-label={t(language, "results.fullResults")}>
               <thead>
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Spelare</th>
-                  <th scope="col">Poäng</th>
-                  <th scope="col">Rätt</th>
-                  <th scope="col" className="results-table__col-time">Snitt</th>
+                  <th scope="col">{t(language, "results.colRank")}</th>
+                  <th scope="col">{t(language, "results.colPlayer")}</th>
+                  <th scope="col">{t(language, "results.colScore")}</th>
+                  <th scope="col">{t(language, "results.colCorrect")}</th>
+                  <th scope="col" className="results-table__col-time">{t(language, "results.colAvgTime")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,7 +103,7 @@ export function ResultsScreen({
                     <td className="results-table__name">
                       {entry.player.name}
                       {entry.player.id === playerId && (
-                        <span className="results-table__you-badge">du</span>
+                        <span className="results-table__you-badge">{t(language, "lobby.you")}</span>
                       )}
                     </td>
                     <td className="results-table__score">
@@ -120,18 +123,18 @@ export function ResultsScreen({
         </section>
 
         {/* Actions */}
-        <div className="results-actions" role="region" aria-label="Åtgärder">
+        <div className="results-actions" role="region" aria-label={t(language, "results.actions")}>
           {isHost ? (
             <button
               type="button"
               className="btn btn--primary"
               onClick={onPlayAgain}
             >
-              Spela igen
+              {t(language, "results.playAgain")}
             </button>
           ) : (
             <p className="waiting-message" aria-live="polite">
-              Väntar på att värden startar nytt spel
+              {t(language, "results.waitingForHost")}
               <span className="waiting-dots" aria-hidden="true">
                 <span>.</span>
                 <span>.</span>
@@ -144,7 +147,7 @@ export function ResultsScreen({
             className="btn--ghost"
             onClick={onLeave}
           >
-            Lämna spelet
+            {t(language, "results.leaveGame")}
           </button>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import type { Room, Player, GameSettings } from "@facit/shared";
+import type { Room, Player, GameSettings, Language } from "@facit/shared";
 import { DEFAULT_GAME_SETTINGS } from "@facit/shared";
 import { getQuestions } from "./questions.js";
 import { generateAIQuestions, isAIAvailable } from "./ai-questions.js";
@@ -23,7 +23,7 @@ export class RoomManager {
   private socketToRoom = new Map<string, string>();
 
   /** Create a new room. Uses AI questions if enabled and available, with pre-generated fallback. */
-  async createRoom(hostSocketId: string, playerName: string): Promise<Room> {
+  async createRoom(hostSocketId: string, playerName: string, language: Language = "sv"): Promise<Room> {
     const roomId = crypto.randomUUID();
     let code = generateRoomCode();
 
@@ -40,18 +40,18 @@ export class RoomManager {
       score: 0,
     };
 
-    const settings: GameSettings = { ...DEFAULT_GAME_SETTINGS };
+    const settings: GameSettings = { ...DEFAULT_GAME_SETTINGS, language };
 
     // Use AI questions if available, fall back to pre-generated bank
     let questions;
     if (settings.useAI && isAIAvailable()) {
-      questions = await generateAIQuestions(settings.questionCount);
+      questions = await generateAIQuestions(settings.questionCount, language);
       if (questions.length === 0) {
         console.log("AI questions unavailable, falling back to question bank");
-        questions = getQuestions(settings.questionCount);
+        questions = getQuestions(settings.questionCount, language);
       }
     } else {
-      questions = getQuestions(settings.questionCount);
+      questions = getQuestions(settings.questionCount, language);
     }
 
     const room: Room = {

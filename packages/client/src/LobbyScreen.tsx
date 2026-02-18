@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import type { Room } from "@facit/shared";
+import type { Room, Language } from "@facit/shared";
+import { t } from "./i18n";
 
 interface LobbyScreenProps {
   room: Room;
@@ -7,6 +8,7 @@ interface LobbyScreenProps {
   isHost: boolean;
   onStartGame: () => void;
   onLeave: () => void;
+  language: Language;
 }
 
 export function LobbyScreen({
@@ -15,6 +17,7 @@ export function LobbyScreen({
   isHost,
   onStartGame,
   onLeave,
+  language,
 }: LobbyScreenProps) {
   const [copied, setCopied] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
@@ -46,24 +49,24 @@ export function LobbyScreen({
     <div className="lobby-screen">
       <div className="lobby-card">
         <div className="lobby-header">
-          <h1 className="lobby-header__title">Lobby</h1>
+          <h1 className="lobby-header__title">{t(language, "lobby.title")}</h1>
           <p className="lobby-header__subtitle">
-            Väntar på spelare...
+            {t(language, "lobby.waitingForPlayers")}
           </p>
         </div>
 
         {/* Room code */}
-        <section className="room-code-section" aria-label="Rumskod att dela">
-          <p className="room-code-label">Rumskod</p>
+        <section className="room-code-section" aria-label={t(language, "lobby.roomCodeSection")}>
+          <p className="room-code-label">{t(language, "lobby.roomCodeLabel")}</p>
           <div className="room-code-display">
-            <output className="room-code-value" aria-label="Rumskod">
+            <output className="room-code-value" aria-label={t(language, "lobby.roomCodeLabel")}>
               {room.code}
             </output>
             <button
               className={`room-code-copy-btn${copied ? " room-code-copy-btn--copied" : ""}`}
               onClick={copyCode}
               type="button"
-              aria-label={copied ? "Kopierat!" : "Kopiera rumskod"}
+              aria-label={copied ? t(language, "lobby.copied") : t(language, "lobby.copyCode")}
             >
               {copied ? (
                 <svg
@@ -110,15 +113,15 @@ export function LobbyScreen({
           </div>
           {copied && (
             <p className="sr-only" aria-live="polite">
-              Rumskod kopierad
+              {t(language, "lobby.roomCodeCopied")}
             </p>
           )}
         </section>
 
         {/* Player list */}
-        <section className="player-list-section" aria-label="Spelare i rummet">
+        <section className="player-list-section" aria-label={t(language, "lobby.playersSection")}>
           <h2 className="player-list-heading">
-            Spelare ({room.players.length})
+            {t(language, "lobby.playersHeading")} ({room.players.length})
           </h2>
           <ul className="player-list" aria-live="polite" aria-relevant="additions removals">
             {room.players.map((player) => (
@@ -129,23 +132,23 @@ export function LobbyScreen({
                 <span className="player-item__indicator" aria-hidden="true" />
                 <span className="player-item__name">
                   {player.name}
-                  {player.id === playerId && " (du)"}
+                  {player.id === playerId && ` (${t(language, "lobby.you")})`}
                 </span>
                 {player.id === room.hostId && (
-                  <span className="player-item__badge">Värd</span>
+                  <span className="player-item__badge">{t(language, "lobby.host")}</span>
                 )}
               </li>
             ))}
           </ul>
           {room.players.length === 1 && (
             <p className="player-list-empty">
-              Dela rumskoden för att bjuda in spelare
+              {t(language, "lobby.shareCode")}
             </p>
           )}
         </section>
 
         {/* Actions */}
-        <div className="lobby-actions" role="region" aria-label="Spelkontroller">
+        <div className="lobby-actions" role="region" aria-label={t(language, "lobby.controls")}>
           {isHost ? (
             <button
               type="button"
@@ -153,11 +156,11 @@ export function LobbyScreen({
               disabled={room.players.length < 2}
               onClick={onStartGame}
             >
-              Starta spelet
+              {t(language, "lobby.startGame")}
             </button>
           ) : (
             <p className="waiting-message" aria-live="polite">
-              Väntar på att värden startar
+              {t(language, "lobby.waitingForHost")}
               <span className="waiting-dots" aria-hidden="true">
                 <span>.</span>
                 <span>.</span>
@@ -168,21 +171,21 @@ export function LobbyScreen({
 
           {confirmLeave ? (
             <div className="leave-confirm">
-              <span className="leave-confirm__text">Lämna lobby?</span>
+              <span className="leave-confirm__text">{t(language, "lobby.confirmLeave")}</span>
               <button
                 type="button"
                 className="btn--ghost"
                 onClick={cancelLeave}
                 autoFocus
               >
-                Avbryt
+                {t(language, "lobby.cancel")}
               </button>
               <button
                 type="button"
                 className="btn--ghost btn--ghost-danger"
                 onClick={handleLeave}
               >
-                Lämna
+                {t(language, "lobby.leave")}
               </button>
             </div>
           ) : (
@@ -191,7 +194,7 @@ export function LobbyScreen({
               className="btn--ghost"
               onClick={handleLeave}
             >
-              Lämna lobby
+              {t(language, "lobby.leaveLobby")}
             </button>
           )}
         </div>

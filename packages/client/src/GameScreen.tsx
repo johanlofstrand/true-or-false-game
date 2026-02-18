@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Player, Room } from "@facit/shared";
+import type { Room, Language } from "@facit/shared";
 import type { AppSocket } from "./useSocket";
 import { useGame } from "./useGame";
 import { useSwipe } from "./useSwipe";
 import { useHints } from "./useHints";
 import { HintDisplay } from "./HintDisplay";
+import { t } from "./i18n";
 
 interface GameScreenProps {
   socket: AppSocket;
   room: Room;
   playerId: string;
+  language: Language;
 }
 
-export function GameScreen({ socket, room, playerId }: GameScreenProps) {
+export function GameScreen({ socket, room, playerId, language }: GameScreenProps) {
   const {
     phase,
     currentQuestion,
@@ -133,10 +135,10 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
   if (phase === "scores" && scores) {
     const sorted = [...scores].sort((a, b) => b.score - a.score);
     return (
-      <main className="game-screen" aria-label="Spelskärm">
+      <main className="game-screen" aria-label={t(language, "game.screen")}>
         <div className="scores-phase">
           <h2 className="scores-phase__title">
-            Ställning efter fråga {questionIndex + 1}
+            {t(language, "game.standingsAfter", { n: questionIndex + 1 })}
           </h2>
           <ol className="scores-list">
             {sorted.map((player, i) => (
@@ -148,13 +150,13 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
                 <span className="scores-list__rank">{i + 1}.</span>
                 <span className="scores-list__name">
                   {player.name}
-                  {player.id === playerId && " (du)"}
+                  {player.id === playerId && ` (${t(language, "lobby.you")})`}
                 </span>
-                <span className="scores-list__score">{player.score} p</span>
+                <span className="scores-list__score">{player.score} {t(language, "game.points")}</span>
               </li>
             ))}
           </ol>
-          <p className="scores-phase__next">Nästa fråga snart...</p>
+          <p className="scores-phase__next">{t(language, "game.nextSoon")}</p>
         </div>
       </main>
     );
@@ -163,24 +165,24 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
   // Waiting phase
   if (phase === "waiting" && !currentQuestion) {
     return (
-      <main className="game-screen" aria-label="Spelskärm">
+      <main className="game-screen" aria-label={t(language, "game.screen")}>
         <div className="game-waiting">
-          <p className="game-waiting__text">Förbereder frågor...</p>
+          <p className="game-waiting__text">{t(language, "game.preparing")}</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="game-screen" aria-label="Spelskärm">
+    <main className="game-screen" aria-label={t(language, "game.screen")}>
       {/* Header */}
       <header className="game-header">
         <p className="game-header__progress">
-          Fråga {questionIndex + 1} av {room.questions.length}
+          {t(language, "game.questionOf", { current: questionIndex + 1, total: room.questions.length })}
         </p>
         <p
           className={`game-header__timer${timeRatio < 0.25 ? " game-header__timer--critical" : ""}`}
-          aria-label={`${timerSeconds} sekunder kvar`}
+          aria-label={t(language, "game.secondsLeft", { n: timerSeconds })}
         >
           {timerSeconds}s
         </p>
@@ -193,7 +195,7 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
         aria-valuenow={timerSeconds}
         aria-valuemin={0}
         aria-valuemax={timePerQuestion}
-        aria-label="Tid kvar"
+        aria-label={t(language, "game.timeLeft")}
       >
         <div
           className={`timer-bar__fill${timeRatio < 0.25 ? " timer-bar__fill--critical" : timeRatio < 0.5 ? " timer-bar__fill--warning" : ""}`}
@@ -202,21 +204,21 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
       </div>
 
       {/* Card area */}
-      <section className="game-card-area" ref={cardAreaRef} aria-label="Fråga">
+      <section className="game-card-area" ref={cardAreaRef} aria-label={t(language, "game.questionArea")}>
         {/* Direction indicators */}
         <span
           className="direction-label direction-label--left"
           aria-hidden="true"
           style={{ opacity: indicatorOpacity("left") }}
         >
-          FALSKT
+          {t(language, "game.false")}
         </span>
         <span
           className="direction-label direction-label--right"
           aria-hidden="true"
           style={{ opacity: indicatorOpacity("right") }}
         >
-          SANT
+          {t(language, "game.true")}
         </span>
 
         {/* Question card */}
@@ -226,7 +228,7 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
             className={`question-card${phase === "question" && !cardExiting ? " question-card--enter" : ""}${answered ? " question-card--answered" : ""}`}
             style={getCardStyle()}
             role="group"
-            aria-label="Påstående"
+            aria-label={t(language, "game.statement")}
           >
             <p className="question-card__statement">
               {currentQuestion.statement}
@@ -241,13 +243,14 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
 
         {/* Hint display */}
         {phase === "question" && !answered && room.settings.hintsEnabled && (
-          <section className="game-hints" aria-label="Ledtrådar">
+          <section className="game-hints" aria-label={t(language, "hints.section")}>
             <HintDisplay
               revealedHints={hints.revealedHints}
               scoreMultiplier={hints.scoreMultiplier}
               hasMore={hints.hasMore}
               loading={hints.loading}
               onRequestHint={hints.requestHint}
+              language={language}
             />
           </section>
         )}
@@ -269,20 +272,24 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
               )}
             </div>
             <p className="feedback-overlay__label">
-              {lastResult.correct ? "Rätt!" : "Fel!"}
+              {lastResult.correct ? t(language, "game.correct") : t(language, "game.incorrect")}
             </p>
             <p className="feedback-overlay__score">
-              +{lastResult.scoreAwarded} p
+              +{lastResult.scoreAwarded} {t(language, "game.points")}
             </p>
             <p className="feedback-overlay__answer">
-              Rätt svar: {lastResult.correctAnswer ? "Sant" : "Falskt"}
+              {t(language, "game.correctAnswer", {
+                answer: lastResult.correctAnswer
+                  ? t(language, "game.answerTrue")
+                  : t(language, "game.answerFalse"),
+              })}
             </p>
           </div>
         )}
       </section>
 
       {/* Answer buttons */}
-      <div className="answer-buttons" role="group" aria-label="Svarsalternativ">
+      <div className="answer-buttons" role="group" aria-label={t(language, "game.answerOptions")}>
         <button
           type="button"
           className="answer-btn answer-btn--false"
@@ -293,7 +300,7 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
-          Falskt
+          {t(language, "game.falseBtn")}
         </button>
         <button
           type="button"
@@ -305,14 +312,14 @@ export function GameScreen({ socket, room, playerId }: GameScreenProps) {
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Sant
+          {t(language, "game.trueBtn")}
         </button>
       </div>
 
       {/* First-question hint */}
       {showFirstHint && questionIndex === 0 && phase === "question" && !answered && (
         <p className="game-instruction">
-          Svep kortet eller tryck på en knapp för att svara
+          {t(language, "game.swipeHint")}
         </p>
       )}
     </main>

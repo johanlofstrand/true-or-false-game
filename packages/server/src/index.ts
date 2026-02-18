@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
 
   // ── Room events ──────────────────────────────────────
 
-  socket.on("room:create", async (playerName) => {
+  socket.on("room:create", async (playerName, language) => {
     // Leave any existing room first
     const existing = roomManager.getRoomBySocket(socket.id);
     if (existing) {
@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
       }
     }
 
-    const room = await roomManager.createRoom(socket.id, playerName);
+    const room = await roomManager.createRoom(socket.id, playerName, language);
     const socketRoom = roomManager.getSocketRoomName(room.id);
     socket.join(socketRoom);
     socket.emit("room:created", room);
@@ -136,7 +136,8 @@ io.on("connection", (socket) => {
       return;
     }
 
-    const hints = generateHints(question);
+    const room = roomManager.getRoomBySocket(socket.id);
+    const hints = generateHints(question, room?.settings.language);
     const hint = hints.find((h) => h.level === nextLevel);
     if (!hint) {
       socket.emit("hint:none");

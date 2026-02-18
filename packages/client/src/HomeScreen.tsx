@@ -1,11 +1,15 @@
 import { FormEvent, useCallback, useRef, useState, KeyboardEvent, ClipboardEvent } from "react";
+import type { Language } from "@facit/shared";
+import { t } from "./i18n";
 
 interface HomeScreenProps {
-  onCreateRoom: (playerName: string) => void;
+  onCreateRoom: (playerName: string, language: Language) => void;
   onJoinRoom: (roomCode: string, playerName: string) => void;
   error: string | null;
   loading: boolean;
   onClearError: () => void;
+  language: Language;
+  onLanguageChange: (lang: Language) => void;
 }
 
 export function HomeScreen({
@@ -14,6 +18,8 @@ export function HomeScreen({
   error,
   loading,
   onClearError,
+  language,
+  onLanguageChange,
 }: HomeScreenProps) {
   const [playerName, setPlayerName] = useState("");
   const [code, setCode] = useState(["", "", "", ""]);
@@ -26,9 +32,9 @@ export function HomeScreen({
     (e: FormEvent) => {
       e.preventDefault();
       if (!nameValid || loading) return;
-      onCreateRoom(playerName.trim());
+      onCreateRoom(playerName.trim(), language);
     },
-    [nameValid, loading, playerName, onCreateRoom],
+    [nameValid, loading, playerName, language, onCreateRoom],
   );
 
   const handleJoin = useCallback(() => {
@@ -97,15 +103,35 @@ export function HomeScreen({
       <div className="home-card">
         <div className="home-brand">
           <h1 className="home-brand__title" id="brand-title">
-            Facit
+            {t(language, "home.title")}
           </h1>
-          <p className="home-brand__subtitle">Sant eller Falskt</p>
+          <p className="home-brand__subtitle">{t(language, "home.subtitle")}</p>
+        </div>
+
+        {/* Language toggle */}
+        <div className="language-toggle" role="radiogroup" aria-label="Language">
+          <button
+            type="button"
+            className={`language-toggle__btn${language === "sv" ? " language-toggle__btn--active" : ""}`}
+            onClick={() => onLanguageChange("sv")}
+            aria-pressed={language === "sv"}
+          >
+            SV
+          </button>
+          <button
+            type="button"
+            className={`language-toggle__btn${language === "en" ? " language-toggle__btn--active" : ""}`}
+            onClick={() => onLanguageChange("en")}
+            aria-pressed={language === "en"}
+          >
+            EN
+          </button>
         </div>
 
         {/* Name input — shared between both actions */}
         <div className="form-group">
           <label className="form-label" htmlFor="player-name">
-            Ditt namn
+            {t(language, "home.nameLabel")}
           </label>
           <input
             id="player-name"
@@ -115,30 +141,30 @@ export function HomeScreen({
             onChange={(e) => setPlayerName(e.target.value)}
             autoComplete="nickname"
             maxLength={20}
-            placeholder="Ange ditt namn"
+            placeholder={t(language, "home.namePlaceholder")}
             disabled={loading}
           />
         </div>
 
         {/* Create room */}
-        <form onSubmit={handleCreate} aria-label="Skapa ett rum">
+        <form onSubmit={handleCreate} aria-label={t(language, "home.createRoomAriaLabel")}>
           <button
             type="submit"
             className={`btn btn--primary${loading ? " btn--loading" : ""}`}
             disabled={!nameValid || loading}
           >
-            Skapa rum
+            {t(language, "home.createRoom")}
           </button>
         </form>
 
         <div className="home-divider" role="separator">
-          <span>eller</span>
+          <span>{t(language, "home.or")}</span>
         </div>
 
         {/* Join room */}
         <div className="form-group">
           <label className="form-label" id="code-label">
-            Rumskod
+            {t(language, "home.codeLabel")}
           </label>
           <div
             className="code-input-group"
@@ -161,7 +187,7 @@ export function HomeScreen({
                 onKeyDown={(e) => handleCodeKeyDown(i, e)}
                 onPaste={handleCodePaste}
                 disabled={loading}
-                aria-label={`Tecken ${i + 1} av 4`}
+                aria-label={t(language, "home.codeCharLabel", { n: i + 1 })}
                 aria-invalid={error ? "true" : undefined}
               />
             ))}
@@ -179,7 +205,7 @@ export function HomeScreen({
           disabled={!nameValid || !codeComplete || loading}
           onClick={handleJoin}
         >
-          Gå med i rum
+          {t(language, "home.joinRoom")}
         </button>
       </div>
     </div>

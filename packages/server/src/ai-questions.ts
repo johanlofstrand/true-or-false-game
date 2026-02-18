@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { Question } from "@facit/shared";
+import type { Question, Language } from "@facit/shared";
 
 let openaiClient: OpenAI | null = null;
 
@@ -25,7 +25,12 @@ interface RawAIQuestion {
   hints: string[];
 }
 
-const SYSTEM_PROMPT = `You are a quiz question generator for a "True or False" trivia game.
+function getSystemPrompt(language: Language): string {
+  const langInstruction = language === "sv"
+    ? "\nIMPORTANT: All statements, categories, sources, and hints MUST be written in Swedish."
+    : "";
+
+  return `You are a quiz question generator for a "True or False" trivia game.
 Generate unique, interesting, and factually accurate true/false questions.
 
 Rules:
@@ -38,6 +43,7 @@ Rules:
   - Hint 1: A general category clue
   - Hint 2: A narrower contextual clue
   - Hint 3: A strong clue that nearly gives away the answer
+${langInstruction}
 
 Respond with a JSON array of objects. Each object must have:
 - "statement": the true/false claim (string)
@@ -47,6 +53,7 @@ Respond with a JSON array of objects. Each object must have:
 - "hints": array of 3 hint strings, ordered from least to most revealing
 
 Respond ONLY with valid JSON. No markdown, no explanation.`;
+}
 
 /**
  * Generate quiz questions using OpenAI.
@@ -55,6 +62,7 @@ Respond ONLY with valid JSON. No markdown, no explanation.`;
  */
 export async function generateAIQuestions(
   count: number,
+  language: Language = "en",
 ): Promise<Question[]> {
   if (!isAIAvailable()) {
     return [];
@@ -66,7 +74,7 @@ export async function generateAIQuestions(
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: getSystemPrompt(language) },
         {
           role: "user",
           content: `Generate ${count} true/false quiz questions.`,

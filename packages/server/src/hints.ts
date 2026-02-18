@@ -1,4 +1,4 @@
-import type { Question, Hint, HintLevel } from "@facit/shared";
+import type { Question, Hint, HintLevel, Language } from "@facit/shared";
 import { MAX_HINTS, HINT_SCORE_MULTIPLIERS } from "@facit/shared";
 
 /**
@@ -9,7 +9,7 @@ import { MAX_HINTS, HINT_SCORE_MULTIPLIERS } from "@facit/shared";
  *  2. Source hint — reveals where the fact comes from (or a general nudge)
  *  3. Elimination hint — strongly narrows it down without giving the answer
  */
-export function generateHints(question: Question): Hint[] {
+export function generateHints(question: Question, language: Language = "en"): Hint[] {
   const hints: Hint[] = [];
 
   // If the question already has custom hints, use those
@@ -20,16 +20,22 @@ export function generateHints(question: Question): Hint[] {
     }));
   }
 
+  const sv = language === "sv";
+
   // Level 1 — Category hint
   if (question.category) {
     hints.push({
       level: 1,
-      text: `This statement is about: ${question.category}`,
+      text: sv
+        ? `Det här påståendet handlar om: ${question.category}`
+        : `This statement is about: ${question.category}`,
     });
   } else {
     hints.push({
       level: 1,
-      text: "Think carefully — does the wording seem absolute or nuanced?",
+      text: sv
+        ? "Tänk efter — verkar formuleringen absolut eller nyanserad?"
+        : "Think carefully — does the wording seem absolute or nuanced?",
     });
   }
 
@@ -37,12 +43,14 @@ export function generateHints(question: Question): Hint[] {
   if (question.source) {
     hints.push({
       level: 2,
-      text: `Source: ${question.source}`,
+      text: sv ? `Källa: ${question.source}` : `Source: ${question.source}`,
     });
   } else {
     hints.push({
       level: 2,
-      text: "Look for key words that might make the statement extreme or unlikely.",
+      text: sv
+        ? "Leta efter nyckelord som gör påståendet extremt eller osannolikt."
+        : "Look for key words that might make the statement extreme or unlikely.",
     });
   }
 
@@ -50,8 +58,8 @@ export function generateHints(question: Question): Hint[] {
   hints.push({
     level: 3,
     text: question.isTrue
-      ? "This one is more likely than you think."
-      : "This one sounds plausible, but is it really?",
+      ? (sv ? "Den här är mer sannolik än du tror." : "This one is more likely than you think.")
+      : (sv ? "Det här låter rimligt, men stämmer det verkligen?" : "This one sounds plausible, but is it really?"),
   });
 
   return hints;

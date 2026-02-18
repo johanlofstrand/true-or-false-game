@@ -1,7 +1,10 @@
+import type { Language } from "@facit/shared";
 import type { HintState } from "./useHints";
+import { t } from "./i18n";
 
 interface HintDisplayProps extends HintState {
   onRequestHint: () => void;
+  language: Language;
 }
 
 export function HintDisplay({
@@ -10,6 +13,7 @@ export function HintDisplay({
   hasMore,
   loading,
   onRequestHint,
+  language,
 }: HintDisplayProps) {
   return (
     <div className="hint-display">
@@ -17,7 +21,7 @@ export function HintDisplay({
         <ul className="hint-list">
           {revealedHints.map((hint) => (
             <li key={hint.level} className="hint-item" data-level={hint.level}>
-              <span className="hint-level">Hint {hint.level}</span>
+              <span className="hint-level">{t(language, "hints.level", { n: hint.level })}</span>
               <span className="hint-text">{hint.text}</span>
             </li>
           ))}
@@ -26,7 +30,7 @@ export function HintDisplay({
 
       {scoreMultiplier < 1 && (
         <p className="hint-penalty">
-          Poängmultiplikator: {Math.round(scoreMultiplier * 100)}%
+          {t(language, "hints.multiplier", { pct: Math.round(scoreMultiplier * 100) })}
         </p>
       )}
 
@@ -38,15 +42,15 @@ export function HintDisplay({
           type="button"
         >
           {loading
-            ? "Laddar..."
+            ? t(language, "hints.loading")
             : revealedHints.length === 0
-              ? "Visa ledtråd"
-              : "Visa nästa ledtråd"}
+              ? t(language, "hints.showHint")
+              : t(language, "hints.showNextHint")}
         </button>
       )}
 
       {!hasMore && revealedHints.length > 0 && (
-        <p className="hint-exhausted">Inga fler ledtrådar</p>
+        <p className="hint-exhausted">{t(language, "hints.noMore")}</p>
       )}
     </div>
   );

@@ -1,12 +1,16 @@
 import { useSocket } from "./useSocket";
 import { useRoom } from "./useRoom";
+import { useLanguage, LanguageProvider } from "./LanguageContext";
 import { HomeScreen } from "./HomeScreen";
 import { LobbyScreen } from "./LobbyScreen";
 import { GameScreen } from "./GameScreen";
 import { ResultsScreen } from "./ResultsScreen";
+import { t } from "./i18n";
+import { useEffect } from "react";
 
-export function App() {
+function AppInner() {
   const socket = useSocket();
+  const { language, setLanguage } = useLanguage();
   const {
     screen,
     room,
@@ -21,12 +25,20 @@ export function App() {
     startGame,
     playAgain,
     clearError,
-  } = useRoom(socket);
+  } = useRoom(socket, language);
+
+  // When joining a room, adopt the room's language
+  const roomLanguage = room?.settings.language;
+  useEffect(() => {
+    if (roomLanguage && roomLanguage !== language) {
+      setLanguage(roomLanguage);
+    }
+  }, [roomLanguage, language, setLanguage]);
 
   if (!socket) {
     return (
       <div className="home-screen">
-        <p className="form-label">Ansluter...</p>
+        <p className="form-label">{t(language, "app.connecting")}</p>
       </div>
     );
   }
@@ -39,6 +51,7 @@ export function App() {
         isHost={isHost}
         onPlayAgain={playAgain}
         onLeave={leaveRoom}
+        language={language}
       />
     );
   }
@@ -49,6 +62,7 @@ export function App() {
         socket={socket}
         room={room}
         playerId={playerId}
+        language={language}
       />
     );
   }
@@ -61,6 +75,7 @@ export function App() {
         isHost={isHost}
         onStartGame={startGame}
         onLeave={leaveRoom}
+        language={language}
       />
     );
   }
@@ -72,6 +87,16 @@ export function App() {
       error={error}
       loading={loading}
       onClearError={clearError}
+      language={language}
+      onLanguageChange={setLanguage}
     />
+  );
+}
+
+export function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
   );
 }

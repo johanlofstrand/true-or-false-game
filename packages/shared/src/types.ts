@@ -1,3 +1,6 @@
+/** Supported languages */
+export type Language = "en" | "sv";
+
 /** A single quiz question */
 export interface Question {
   id: string;
@@ -58,6 +61,7 @@ export interface GameSettings {
   timePerQuestion: number; // seconds
   hintsEnabled: boolean;
   useAI: boolean;
+  language: Language;
 }
 
 export const DEFAULT_GAME_SETTINGS: GameSettings = {
@@ -65,6 +69,7 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   timePerQuestion: 15,
   hintsEnabled: true,
   useAI: false,
+  language: "sv",
 };
 
 /** Answer submitted by a player */
@@ -88,7 +93,7 @@ export interface LeaderboardEntry {
 
 /** Events sent from client to server */
 export interface ClientToServerEvents {
-  "room:create": (playerName: string) => void;
+  "room:create": (playerName: string, language: Language) => void;
   "room:join": (roomCode: string, playerName: string) => void;
   "room:leave": () => void;
   "game:start": () => void;

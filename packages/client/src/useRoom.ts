@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { LeaderboardEntry, Player, Room } from "@facit/shared";
+import type { LeaderboardEntry, Language, Player, Room } from "@facit/shared";
 import type { AppSocket } from "./useSocket";
 
 export type Screen = "home" | "lobby" | "game" | "results";
@@ -16,7 +16,7 @@ export interface RoomState {
  * Hook managing room lifecycle: create, join, leave, and
  * real-time player updates via Socket.io events.
  */
-export function useRoom(socket: AppSocket | null) {
+export function useRoom(socket: AppSocket | null, language: Language = "sv") {
   const [screen, setScreen] = useState<Screen>("home");
   const [room, setRoom] = useState<Room | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export function useRoom(socket: AppSocket | null) {
 
     const onError = (message: string) => {
       setLoading(false);
-      setError(mapErrorMessage(message));
+      setError(mapErrorMessage(message, language));
     };
 
     const onGameStarted = () => {
@@ -96,14 +96,14 @@ export function useRoom(socket: AppSocket | null) {
       socket.off("game:finished", onGameFinished);
       socket.off("error", onError);
     };
-  }, [socket]);
+  }, [socket, language]);
 
   const createRoom = useCallback(
-    (playerName: string) => {
+    (playerName: string, language: Language = "sv") => {
       if (!socket || loading) return;
       setLoading(true);
       setError(null);
-      socket.emit("room:create", playerName);
+      socket.emit("room:create", playerName, language);
     },
     [socket, loading],
   );
@@ -157,12 +157,14 @@ export function useRoom(socket: AppSocket | null) {
   };
 }
 
-function mapErrorMessage(message: string): string {
+function mapErrorMessage(message: string, language: Language): string {
+  const sv = language === "sv";
   const lower = message.toLowerCase();
   if (lower.includes("not found") || lower.includes("invalid"))
-    return "Rummet hittades inte. Kontrollera koden.";
+    return sv ? "Rummet hittades inte. Kontrollera koden." : "Room not found. Check the code.";
   if (lower.includes("already") || lower.includes("playing"))
-    return "Det spelet har redan börjat.";
-  if (lower.includes("full")) return "Rummet är fullt.";
+    return sv ? "Det spelet har redan börjat." : "That game has already started.";
+  if (lower.includes("full"))
+    return sv ? "Rummet är fullt." : "The room is full.";
   return message;
 }
