@@ -1,7 +1,0 @@
-[build]
-builder = "nixpacks"
-buildCommand = "pnpm install --frozen-lockfile && pnpm build"
-
-[deploy]
-startCommand = "node packages/server/dist/index.js"
-healthcheckPath = "/health"
