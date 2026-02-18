@@ -1,5 +1,8 @@
 import express from "express";
 import { createServer } from "node:http";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import cors from "cors";
 import { Server } from "socket.io";
 import type {
@@ -11,6 +14,8 @@ import { generateHints, HintTracker } from "./hints.js";
 import { RoomManager } from "./rooms.js";
 import { GameManager } from "./game-manager.js";
 import { isAIAvailable } from "./ai-questions.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -31,6 +36,12 @@ const gameManager = new GameManager();
 
 // Maps socket.id → their current question (set during game flow).
 const playerCurrentQuestion = new Map<string, Question>();
+
+// Serve static client files in production
+if (process.env.NODE_ENV === "production") {
+  const clientDist = path.join(__dirname, "../../client/dist");
+  app.use(express.static(clientDist));
+}
 
 // Health check
 app.get("/health", (_req, res) => {
@@ -215,6 +226,14 @@ io.on("connection", (socket) => {
     console.log(`Player ${socketId} left room ${room.code}${deleted ? " (room deleted)" : ""}`);
   }
 });
+
+// Fallback to index.html for SPA routing (must be after API routes)
+if (process.env.NODE_ENV === "production") {
+  const clientDist = path.join(__dirname, "../../client/dist");
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(clientDist, "index.html"));
+  });
+}
 
 httpServer.listen(PORT, () => {
   console.log(`Facit server running on http://localhost:${PORT}`);
