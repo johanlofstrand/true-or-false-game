@@ -150,6 +150,44 @@ export class RoomManager {
     return `room:${roomId}`;
   }
 
+  /** Update settings for a room. Re-fetches questions if relevant settings changed. */
+  async updateSettings(
+    roomId: string,
+    partial: Partial<GameSettings>,
+  ): Promise<GameSettings | null> {
+    const room = this.rooms.get(roomId);
+    if (!room || room.status !== "lobby") return null;
+
+    const prev = room.settings;
+    room.settings = { ...prev, ...partial };
+
+    // Re-fetch questions if count, AI, or language changed
+    const needNewQuestions =
+      room.settings.questionCount !== prev.questionCount ||
+      room.settings.useAI !== prev.useAI ||
+      room.settings.language !== prev.language;
+
+    if (needNewQuestions) {
+      if (room.settings.useAI && isAIAvailable()) {
+        const aiQuestions = await generateAIQuestions(
+          room.settings.questionCount,
+          room.settings.language,
+        );
+        room.questions =
+          aiQuestions.length > 0
+            ? aiQuestions
+            : getQuestions(room.settings.questionCount, room.settings.language);
+      } else {
+        room.questions = getQuestions(
+          room.settings.questionCount,
+          room.settings.language,
+        );
+      }
+    }
+
+    return room.settings;
+  }
+
   /** Get the Socket.io room name for the room a socket is in */
   getSocketRoomNameBySocket(socketId: string): string | null {
     const roomId = this.socketToRoom.get(socketId);

@@ -80,6 +80,17 @@ const translations: Record<Language, Record<string, string>> = {
     "results.waitingForHost": "Väntar på att värden startar nytt spel",
     "results.leaveGame": "Lämna spelet",
 
+    // Settings
+    "settings.title": "Spelinställningar",
+    "settings.questionCount": "Antal frågor",
+    "settings.timePerQuestion": "Tid per fråga",
+    "settings.hints": "Ledtrådar",
+    "settings.aiQuestions": "AI-genererade frågor",
+    "settings.aiNotConfigured": "API-nyckel saknas på servern",
+    "settings.on": "På",
+    "settings.off": "Av",
+    "settings.seconds": "sek",
+
     // HintDisplay
     "hints.level": "Hint {n}",
     "hints.multiplier": "Poängmultiplikator: {pct}%",
@@ -173,6 +184,17 @@ const translations: Record<Language, Record<string, string>> = {
     "results.playAgain": "Play again",
     "results.waitingForHost": "Waiting for the host to start a new game",
     "results.leaveGame": "Leave game",
+
+    // Settings
+    "settings.title": "Game settings",
+    "settings.questionCount": "Number of questions",
+    "settings.timePerQuestion": "Time per question",
+    "settings.hints": "Hints",
+    "settings.aiQuestions": "AI-generated questions",
+    "settings.aiNotConfigured": "API key not set on server",
+    "settings.on": "On",
+    "settings.off": "Off",
+    "settings.seconds": "sec",
 
     // HintDisplay
     "hints.level": "Hint {n}",

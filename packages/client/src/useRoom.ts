@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { LeaderboardEntry, Language, Player, Room } from "@facit/shared";
+import type { GameSettings, LeaderboardEntry, Language, Player, Room } from "@facit/shared";
 import type { AppSocket } from "./useSocket";
 
 export type Screen = "home" | "lobby" | "game" | "results";
@@ -65,6 +65,13 @@ export function useRoom(socket: AppSocket | null, language: Language = "sv") {
       });
     };
 
+    const onSettingsUpdated = (settings: GameSettings) => {
+      setRoom((prev) => {
+        if (!prev) return prev;
+        return { ...prev, settings };
+      });
+    };
+
     const onError = (message: string) => {
       setLoading(false);
       setError(mapErrorMessage(message, language));
@@ -83,6 +90,7 @@ export function useRoom(socket: AppSocket | null, language: Language = "sv") {
     socket.on("room:joined", onJoined);
     socket.on("room:playerJoined", onPlayerJoined);
     socket.on("room:playerLeft", onPlayerLeft);
+    socket.on("room:settingsUpdated", onSettingsUpdated);
     socket.on("game:started", onGameStarted);
     socket.on("game:finished", onGameFinished);
     socket.on("error", onError);
@@ -92,6 +100,7 @@ export function useRoom(socket: AppSocket | null, language: Language = "sv") {
       socket.off("room:joined", onJoined);
       socket.off("room:playerJoined", onPlayerJoined);
       socket.off("room:playerLeft", onPlayerLeft);
+      socket.off("room:settingsUpdated", onSettingsUpdated);
       socket.off("game:started", onGameStarted);
       socket.off("game:finished", onGameFinished);
       socket.off("error", onError);
@@ -133,6 +142,14 @@ export function useRoom(socket: AppSocket | null, language: Language = "sv") {
     socket.emit("game:start");
   }, [socket]);
 
+  const updateSettings = useCallback(
+    (settings: Partial<GameSettings>) => {
+      if (!socket) return;
+      socket.emit("room:updateSettings", settings);
+    },
+    [socket],
+  );
+
   const playAgain = useCallback(() => {
     setLeaderboard([]);
     setScreen("lobby");
@@ -152,6 +169,7 @@ export function useRoom(socket: AppSocket | null, language: Language = "sv") {
     joinRoom,
     leaveRoom,
     startGame,
+    updateSettings,
     playAgain,
     clearError: () => setError(null),
   };

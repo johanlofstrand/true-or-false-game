@@ -96,6 +96,7 @@ export interface ClientToServerEvents {
   "room:create": (playerName: string, language: Language) => void;
   "room:join": (roomCode: string, playerName: string) => void;
   "room:leave": () => void;
+  "room:updateSettings": (settings: Partial<GameSettings>) => void;
   "game:start": () => void;
   "game:answer": (answer: boolean) => void;
   "hint:request": () => void;
@@ -107,6 +108,7 @@ export interface ServerToClientEvents {
   "room:joined": (room: Room) => void;
   "room:playerJoined": (player: Player) => void;
   "room:playerLeft": (playerId: string) => void;
+  "room:settingsUpdated": (settings: GameSettings) => void;
   "game:started": () => void;
   "game:question": (question: Omit<Question, "isTrue">, index: number) => void;
   "game:timeUp": () => void;

@@ -1,14 +1,19 @@
 import { useCallback, useState } from "react";
-import type { Room, Language } from "@facit/shared";
+import type { GameSettings, Room, Language } from "@facit/shared";
 import { t } from "./i18n";
+
+const QUESTION_COUNT_OPTIONS = [5, 10, 15, 20];
+const TIME_OPTIONS = [10, 15, 20, 30];
 
 interface LobbyScreenProps {
   room: Room;
   playerId: string;
   isHost: boolean;
   onStartGame: () => void;
+  onUpdateSettings: (settings: Partial<GameSettings>) => void;
   onLeave: () => void;
   language: Language;
+  aiAvailable: boolean;
 }
 
 export function LobbyScreen({
@@ -16,11 +21,15 @@ export function LobbyScreen({
   playerId,
   isHost,
   onStartGame,
+  onUpdateSettings,
   onLeave,
   language,
+  aiAvailable,
 }: LobbyScreenProps) {
   const [copied, setCopied] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
+
+  const { settings } = room;
 
   const copyCode = useCallback(async () => {
     try {
@@ -146,6 +155,130 @@ export function LobbyScreen({
             </p>
           )}
         </section>
+
+        {/* Settings */}
+        {isHost ? (
+          <section className="lobby-settings" aria-label={t(language, "settings.title")}>
+            <h2 className="lobby-settings__heading">{t(language, "settings.title")}</h2>
+
+            <fieldset className="settings-field">
+              <legend className="settings-field__label">
+                {t(language, "settings.questionCount")}
+              </legend>
+              <div className="settings-options">
+                {QUESTION_COUNT_OPTIONS.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={`settings-option${settings.questionCount === n ? " settings-option--active" : ""}`}
+                    aria-pressed={settings.questionCount === n}
+                    onClick={() => onUpdateSettings({ questionCount: n })}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset className="settings-field">
+              <legend className="settings-field__label">
+                {t(language, "settings.timePerQuestion")}
+              </legend>
+              <div className="settings-options">
+                {TIME_OPTIONS.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={`settings-option${settings.timePerQuestion === n ? " settings-option--active" : ""}`}
+                    aria-pressed={settings.timePerQuestion === n}
+                    onClick={() => onUpdateSettings({ timePerQuestion: n })}
+                  >
+                    {n}{t(language, "settings.seconds")}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="settings-toggle-row">
+              <span className="settings-toggle-row__label" id="toggle-hints-label">
+                {t(language, "settings.hints")}
+              </span>
+              <div className="settings-toggle" role="group" aria-labelledby="toggle-hints-label">
+                <button
+                  type="button"
+                  className={`settings-toggle__btn${!settings.hintsEnabled ? " settings-toggle__btn--active" : ""}`}
+                  aria-pressed={!settings.hintsEnabled}
+                  onClick={() => onUpdateSettings({ hintsEnabled: false })}
+                >
+                  {t(language, "settings.off")}
+                </button>
+                <button
+                  type="button"
+                  className={`settings-toggle__btn${settings.hintsEnabled ? " settings-toggle__btn--active" : ""}`}
+                  aria-pressed={settings.hintsEnabled}
+                  onClick={() => onUpdateSettings({ hintsEnabled: true })}
+                >
+                  {t(language, "settings.on")}
+                </button>
+              </div>
+            </div>
+
+            <div className="settings-toggle-row">
+              <span className="settings-toggle-row__label" id="toggle-ai-label">
+                {t(language, "settings.aiQuestions")}
+                {!aiAvailable && (
+                  <span className="settings-toggle-row__note">
+                    {t(language, "settings.aiNotConfigured")}
+                  </span>
+                )}
+              </span>
+              <div
+                className="settings-toggle"
+                role="group"
+                aria-labelledby="toggle-ai-label"
+                aria-disabled={!aiAvailable}
+              >
+                <button
+                  type="button"
+                  className={`settings-toggle__btn${!settings.useAI ? " settings-toggle__btn--active" : ""}`}
+                  aria-pressed={!settings.useAI}
+                  disabled={!aiAvailable}
+                  onClick={() => onUpdateSettings({ useAI: false })}
+                >
+                  {t(language, "settings.off")}
+                </button>
+                <button
+                  type="button"
+                  className={`settings-toggle__btn${settings.useAI ? " settings-toggle__btn--active" : ""}`}
+                  aria-pressed={settings.useAI}
+                  disabled={!aiAvailable}
+                  onClick={() => onUpdateSettings({ useAI: true })}
+                >
+                  {t(language, "settings.on")}
+                </button>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="lobby-settings lobby-settings--readonly" aria-label={t(language, "settings.title")}>
+            <h2 className="lobby-settings__heading">{t(language, "settings.title")}</h2>
+            <p className="lobby-settings__summary" aria-live="polite">
+              {settings.questionCount} {t(language, "settings.questionCount").toLowerCase()}
+              <span aria-hidden="true"> &middot; </span>
+              {settings.timePerQuestion}{t(language, "settings.seconds")}
+              <span aria-hidden="true"> &middot; </span>
+              {t(language, "settings.hints")}{" "}
+              <span className={`lobby-settings__badge${settings.hintsEnabled ? " lobby-settings__badge--on" : " lobby-settings__badge--off"}`}>
+                {settings.hintsEnabled ? t(language, "settings.on") : t(language, "settings.off")}
+              </span>
+              <span aria-hidden="true"> &middot; </span>
+              AI{" "}
+              <span className={`lobby-settings__badge${settings.useAI ? " lobby-settings__badge--on" : " lobby-settings__badge--off"}`}>
+                {settings.useAI ? t(language, "settings.on") : t(language, "settings.off")}
+              </span>
+            </p>
+          </section>
+        )}
 
         {/* Actions */}
         <div className="lobby-actions" role="region" aria-label={t(language, "lobby.controls")}>

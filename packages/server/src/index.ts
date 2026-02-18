@@ -10,6 +10,7 @@ import type {
 import { generateHints, HintTracker } from "./hints.js";
 import { RoomManager } from "./rooms.js";
 import { GameManager } from "./game-manager.js";
+import { isAIAvailable } from "./ai-questions.js";
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -34,6 +35,11 @@ const playerCurrentQuestion = new Map<string, Question>();
 // Health check
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
+});
+
+// Server configuration (safe to expose to clients)
+app.get("/config", (_req, res) => {
+  res.json({ aiAvailable: isAIAvailable() });
 });
 
 io.on("connection", (socket) => {
@@ -81,6 +87,28 @@ io.on("connection", (socket) => {
 
   socket.on("room:leave", () => {
     handleLeave(socket.id);
+  });
+
+  socket.on("room:updateSettings", async (settings) => {
+    const room = roomManager.getRoomBySocket(socket.id);
+    if (!room) {
+      socket.emit("error", "You are not in a room.");
+      return;
+    }
+    if (room.hostId !== socket.id) {
+      socket.emit("error", "Only the host can change settings.");
+      return;
+    }
+    if (room.status !== "lobby") {
+      socket.emit("error", "Settings can only be changed in the lobby.");
+      return;
+    }
+
+    const updated = await roomManager.updateSettings(room.id, settings);
+    if (updated) {
+      const socketRoom = roomManager.getSocketRoomName(room.id);
+      io.to(socketRoom).emit("room:settingsUpdated", updated);
+    }
   });
 
   // ── Game events ──────────────────────────────────────

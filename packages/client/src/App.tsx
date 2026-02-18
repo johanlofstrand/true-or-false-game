@@ -6,11 +6,19 @@ import { LobbyScreen } from "./LobbyScreen";
 import { GameScreen } from "./GameScreen";
 import { ResultsScreen } from "./ResultsScreen";
 import { t } from "./i18n";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function AppInner() {
   const socket = useSocket();
   const { language, setLanguage } = useLanguage();
+  const [aiAvailable, setAiAvailable] = useState(false);
+
+  useEffect(() => {
+    fetch("/config")
+      .then((r) => r.json())
+      .then((data) => setAiAvailable(Boolean(data.aiAvailable)))
+      .catch(() => setAiAvailable(false));
+  }, [socket]);
   const {
     screen,
     room,
@@ -23,6 +31,7 @@ function AppInner() {
     joinRoom,
     leaveRoom,
     startGame,
+    updateSettings,
     playAgain,
     clearError,
   } = useRoom(socket, language);
@@ -74,8 +83,10 @@ function AppInner() {
         playerId={playerId}
         isHost={isHost}
         onStartGame={startGame}
+        onUpdateSettings={updateSettings}
         onLeave={leaveRoom}
         language={language}
+        aiAvailable={aiAvailable}
       />
     );
   }
