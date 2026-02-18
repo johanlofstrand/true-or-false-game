@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@facit/shared": "*",
+    "@facit/shared": "workspace:*",
     "cors": "^2.8.5",
     "express": "^4.21.0",
     "openai": "^6.22.0",
