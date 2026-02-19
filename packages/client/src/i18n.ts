@@ -6,8 +6,8 @@ const translations: Record<Language, Record<string, string>> = {
     "app.connecting": "Ansluter...",
 
     // HomeScreen
-    "home.title": "Facit",
-    "home.subtitle": "Sant eller Falskt",
+    "home.title": "Sant eller Falskt",
+    "home.subtitle": "Spelet",
     "home.nameLabel": "Ditt namn",
     "home.namePlaceholder": "Ange ditt namn",
     "home.createRoom": "Skapa rum",
@@ -112,8 +112,8 @@ const translations: Record<Language, Record<string, string>> = {
     "app.connecting": "Connecting...",
 
     // HomeScreen
-    "home.title": "Facit",
-    "home.subtitle": "True or False",
+    "home.title": "True or False",
+    "home.subtitle": "Game",
     "home.nameLabel": "Your name",
     "home.namePlaceholder": "Enter your name",
     "home.createRoom": "Create room",
