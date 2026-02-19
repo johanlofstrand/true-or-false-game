@@ -21,7 +21,7 @@ function getStoredLanguage(): Language {
   } catch {
     // localStorage unavailable
   }
-  return "sv";
+  return "en";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {

@@ -105,19 +105,10 @@ export function HomeScreen({
           <h1 className="home-brand__title" id="brand-title">
             {t(language, "home.title")}
           </h1>
-          <p className="home-brand__subtitle">{t(language, "home.subtitle")}</p>
         </div>
 
         {/* Language toggle */}
         <div className="language-toggle" role="radiogroup" aria-label="Language">
-          <button
-            type="button"
-            className={`language-toggle__btn${language === "sv" ? " language-toggle__btn--active" : ""}`}
-            onClick={() => onLanguageChange("sv")}
-            aria-pressed={language === "sv"}
-          >
-            SV
-          </button>
           <button
             type="button"
             className={`language-toggle__btn${language === "en" ? " language-toggle__btn--active" : ""}`}
@@ -125,6 +116,14 @@ export function HomeScreen({
             aria-pressed={language === "en"}
           >
             EN
+          </button>
+          <button
+            type="button"
+            className={`language-toggle__btn${language === "sv" ? " language-toggle__btn--active" : ""}`}
+            onClick={() => onLanguageChange("sv")}
+            aria-pressed={language === "sv"}
+          >
+            SV
           </button>
         </div>
 
