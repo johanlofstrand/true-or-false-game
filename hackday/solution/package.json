@@ -1,0 +1,13 @@
+{
+  "name": "true-or-false-game",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @game/shared build && concurrently -n server,client -c \"bgBlue.bold,bgGreen.bold\" \"pnpm --filter @game/server dev\" \"pnpm --filter @game/client dev\"",
+    "build": "pnpm --filter @game/shared build && pnpm --filter @game/client build && pnpm --filter @game/server build",
+    "build:shared": "pnpm --filter @game/shared build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "socket.io-client": "^4.6.2"
+  }
+}
