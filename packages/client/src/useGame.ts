@@ -75,13 +75,14 @@ export function useGame(socket: AppSocket | null, totalQuestions: number, timePe
     };
 
     const onResult = (correct: boolean, correctAnswer: boolean, scoreAwarded: number) => {
-      clearTimer();
+      // Keep the timer running — other players may still be answering
       setAnswered(true);
       setLastResult({ correct, correctAnswer, scoreAwarded });
       setPhase("result");
     };
 
     const onScores = (players: Player[]) => {
+      clearTimer();
       setScores(players);
       setPhase("scores");
     };

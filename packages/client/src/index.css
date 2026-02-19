@@ -986,6 +986,13 @@ body {
 .timer-bar__fill--critical {
   background: var(--color-error);
 }
+.timer-bar--answered {
+  opacity: 0.4;
+  transition: opacity 300ms ease;
+}
+.timer-bar--answered .timer-bar__fill {
+  filter: saturate(0.4);
+}
 
 @media (min-width: 768px) {
   .timer-bar {
@@ -1257,6 +1264,14 @@ body {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   margin-top: var(--space-xs);
+}
+.feedback-overlay__waiting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-md);
 }
 
 @keyframes score-pop {

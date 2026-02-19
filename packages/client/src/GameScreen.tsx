@@ -190,7 +190,7 @@ export function GameScreen({ socket, room, playerId, language }: GameScreenProps
 
       {/* Timer bar */}
       <div
-        className="timer-bar"
+        className={`timer-bar${answered ? " timer-bar--answered" : ""}`}
         role="progressbar"
         aria-valuenow={timerSeconds}
         aria-valuemin={0}
@@ -283,6 +283,12 @@ export function GameScreen({ socket, room, playerId, language }: GameScreenProps
                   ? t(language, "game.answerTrue")
                   : t(language, "game.answerFalse"),
               })}
+            </p>
+            <p className="feedback-overlay__waiting" aria-live="polite">
+              {t(language, "game.waitingForPlayers")}
+              <span className="waiting-dots" aria-hidden="true">
+                <span>.</span><span>.</span><span>.</span>
+              </span>
             </p>
           </div>
         )}
